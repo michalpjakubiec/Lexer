@@ -16,11 +16,11 @@ namespace _20181114
 
             var regexPatterns = new List<Regex>
             {
-                new Regex (@"(^\+|^-|^\*|^\/)(.*)"),         // operator
-                new Regex (@"(^\(|^\))(.*)"),                // parentheses
-                new Regex (@"(^\d+.\d+)(.*)"),               // float
-                new Regex (@"(^\d+)(.*)"),                   // integer
-                new Regex (@"(^[A-Za-z][A-Za-z0-9]*)(.*)"),  // integer
+                new Regex (@"(?<IDENTIFIER>^[A-Za-z][A-Za-z0-9]*\d*)"), // identifier
+                new Regex (@"(?<OPERATOR>^\+|^-|^\*|^\/)"),             // operator
+                new Regex (@"(?<PARENTHESE>^\(|^\))"),                  // parentheses
+                new Regex (@"(?<FLOAT>^\d+\.\d+)"),                     // float
+                new Regex (@"(?<INTEGER>^\d+)"),                        // integer
             };
 
             foreach (var line in inputLines)
@@ -33,11 +33,37 @@ namespace _20181114
         {
             string remainingText = line;
 
-            for (int i = 0; i < regexPatterns.Count; i++)
+            remainingText = Regex.Replace(remainingText, @"\s+", "");
+
+            var isEndOfLineOrUnexpectedToken = false;
+
+            do
             {
-                regexPatterns[i].Match(remainingText);
-                regexPatterns[i].Split(remainingText).Select(x => x );
-            } 
+                foreach (var regex in regexPatterns)
+                {
+                    var match = regex.Match(remainingText);
+                    var groupName = regex.GroupNameFromNumber(1);
+
+                    if (match.Success)
+                    {
+                        remainingText = regex.Replace(remainingText, "");
+
+                        Console.Write($"{groupName} ");
+                        Console.Write($"{match.Value}, ");
+
+                        isEndOfLineOrUnexpectedToken = true;
+                        break;
+                    }
+
+                    isEndOfLineOrUnexpectedToken = false;
+                }
+
+                if (isEndOfLineOrUnexpectedToken == false)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+            } while (isEndOfLineOrUnexpectedToken);
         }
 
         private static IList<string> ReadLinesToList(string fileName)
@@ -46,7 +72,7 @@ namespace _20181114
 
             if (File.Exists(fileName))
             {
-                input = File.ReadLines(fileName).ToList();
+                input = File.ReadLines(fileName).Where(x => x != string.Empty).ToList();
             }
             else
             {
