@@ -16,26 +16,30 @@ namespace _20181114
 
             var regexPatterns = new List<Regex>
             {
-                new Regex (@"(?<IDENTIFIER>^[A-Za-z][A-Za-z0-9]*\d*)"), // identifier
-                new Regex (@"(?<OPERATOR>^\+|^-|^\*|^\/)"),             // operator
-                new Regex (@"(?<PARENTHESE>^\(|^\))"),                  // parentheses
-                new Regex (@"(?<FLOAT>^\d+\.\d+)"),                     // float
-                new Regex (@"(?<INTEGER>^\d+)"),                        // integer
+                new Regex (@"(?<Identifier>^[A-Za-z][A-Za-z]*[0-9]*)"),
+                new Regex (@"(?<Operator>^\+|^-|^\*|^\/)"),
+                new Regex (@"(?<Parenthese>^\(|^\))"),
+                new Regex (@"(?<Float>^\d+\.\d+)"),
+                new Regex (@"(?<Integer>^\d+)"),
             };
 
             foreach (var line in inputLines)
             {
                 GetTokens(line, regexPatterns);
             }
+
+            Console.Write("Press any key to exit...");
+            Console.ReadKey();
         }
 
         static void GetTokens(string line, IList<Regex> regexPatterns)
         {
-            string remainingText = line;
-
-            remainingText = Regex.Replace(remainingText, @"\s+", "");
+            string remainingText = line.TrimStart();
 
             var isEndOfLineOrUnexpectedToken = false;
+
+            Console.WriteLine(remainingText);
+            Console.WriteLine("==========================");
 
             do
             {
@@ -46,10 +50,10 @@ namespace _20181114
 
                     if (match.Success)
                     {
-                        remainingText = regex.Replace(remainingText, "");
+                        Console.Write($"{groupName,-15} ");
+                        Console.WriteLine($"{match.Value,-10}");
 
-                        Console.Write($"{groupName} ");
-                        Console.Write($"{match.Value}, ");
+                        remainingText = regex.Replace(remainingText, string.Empty).TrimStart();
 
                         isEndOfLineOrUnexpectedToken = true;
                         break;
@@ -60,9 +64,17 @@ namespace _20181114
 
                 if (isEndOfLineOrUnexpectedToken == false)
                 {
+                    if (!string.IsNullOrWhiteSpace(remainingText))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"[ ERROR ] Unexpected token: \"{remainingText}\".");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    Console.WriteLine();
                     Console.WriteLine();
                     break;
                 }
+
             } while (isEndOfLineOrUnexpectedToken);
         }
 
