@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace _20181114
 
             var regexPatterns = new List<Regex>
             {
-                new Regex (@"(?<Identifier>^[A-Za-z][A-Za-z]*[0-9]*)"),
+                new Regex (@"(?<Identifier>^[A-Za-z][A-Za-z0-9]*)"),
                 new Regex (@"(?<Operator>^\+|^-|^\*|^\/)"),
                 new Regex (@"(?<Parenthese>^\(|^\))"),
                 new Regex (@"(?<Float>^\d+\.\d+)"),
@@ -68,7 +68,13 @@ namespace _20181114
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"[ ERROR ] Unexpected token: \"{remainingText}\".");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"[ OK ]");
+                        Console.ResetColor();
                     }
                     Console.WriteLine();
                     Console.WriteLine();
